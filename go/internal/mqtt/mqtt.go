@@ -55,7 +55,7 @@ func MqttClientStart() {
 // Queue 定义一个最大长度为20的队列
 var Queue = list.New()
 
-const queueMaxLen = 15
+const queueMaxLen = 24
 
 // 处理接收到的消息
 func messageHandler(client mqttC.Client, msg mqttC.Message) {

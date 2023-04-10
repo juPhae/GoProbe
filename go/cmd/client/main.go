@@ -1,6 +1,3 @@
-//go:build linux
-// +build linux
-
 package main
 
 import (
@@ -12,13 +9,7 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
-	"golang.org/x/sys/unix"
 	"log"
-	"os"
-	"os/exec"
-	"strconv"
-	"strings"
-	"syscall"
 	"time"
 )
 
@@ -170,11 +161,11 @@ func messageHandler(client mqtt.Client, msg mqtt.Message) {
 			switch deviceStatus.Command {
 			case "start":
 				fmt.Println("正在启动脚本...")
-				startShell()
+				//startShell()
 				fmt.Println("脚本启动成功")
 			case "stop":
 				fmt.Println("正在停止脚本...")
-				stopShell()
+				//stopShell()
 				fmt.Println("脚本已停止")
 			default:
 				fmt.Println("未知命令：", deviceStatus.Command)
@@ -198,53 +189,56 @@ func messageHandler(client mqtt.Client, msg mqtt.Message) {
 
 	}
 }
-func startShell() error {
-	// 检查脚本是否存在
-	scriptPath := "/root/keep/keepLive.sh"
-	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
-		return fmt.Errorf("脚本文件不存在：%s", scriptPath)
-	}
 
-	// 创建 cmd 对象
-	cmd := exec.Command("/bin/bash", scriptPath)
+var scriptFilePath = "/home/ubuntu/keepLive/keep.sh"
 
-	// 配置 cmd 对象
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid: true,
-	}
-
-	// 启动脚本
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("启动脚本失败：%s", err)
-	}
-
-	return nil
-}
-
-func stopShell() error {
-	// 查找脚本进程
-	cmd := exec.Command("/usr/bin/pgrep", "-f", "/root/keep/keepLive.sh")
-	pids, err := cmd.Output()
-	if err != nil {
-		return fmt.Errorf("查找脚本进程失败：%s", err)
-	}
-
-	// 终止脚本进程
-	for _, pid := range strings.Split(strings.TrimSpace(string(pids)), "\n") {
-		pid = strings.TrimSpace(pid)
-		if pid == "" {
-			continue
-		}
-		pidInt, err := strconv.Atoi(pid)
-		if err != nil {
-			return fmt.Errorf("无效的进程号：%s", pid)
-		}
-		if err := unix.Kill(-pidInt, unix.SIGTERM); err != nil {
-			return fmt.Errorf("终止脚本进程失败：%s", err)
-		}
-	}
-
-	return nil
-}
+//func startShell() error {
+//	// 检查脚本是否存在
+//	scriptPath := scriptFilePath
+//	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
+//		return fmt.Errorf("脚本文件不存在：%s", scriptPath)
+//	}
+//
+//	// 创建 cmd 对象
+//	cmd := exec.Command("/bin/bash", scriptPath)
+//
+//	// 配置 cmd 对象
+//	cmd.Stdout = os.Stdout
+//	cmd.Stderr = os.Stderr
+//	cmd.SysProcAttr = &syscall.SysProcAttr{
+//		Setpgid: true,
+//	}
+//
+//	// 启动脚本
+//	if err := cmd.Start(); err != nil {
+//		return fmt.Errorf("启动脚本失败：%s", err)
+//	}
+//
+//	return nil
+//}
+//
+//func stopShell() error {
+//	// 查找脚本进程
+//	cmd := exec.Command("/usr/bin/pgrep", "-f", scriptFilePath)
+//	pids, err := cmd.Output()
+//	if err != nil {
+//		return fmt.Errorf("查找脚本进程失败：%s", err)
+//	}
+//
+//	// 终止脚本进程
+//	for _, pid := range strings.Split(strings.TrimSpace(string(pids)), "\n") {
+//		pid = strings.TrimSpace(pid)
+//		if pid == "" {
+//			continue
+//		}
+//		pidInt, err := strconv.Atoi(pid)
+//		if err != nil {
+//			return fmt.Errorf("无效的进程号：%s", pid)
+//		}
+//		if err := unix.Kill(-pidInt, unix.SIGTERM); err != nil {
+//			return fmt.Errorf("终止脚本进程失败：%s", err)
+//		}
+//	}
+//
+//	return nil
+//}

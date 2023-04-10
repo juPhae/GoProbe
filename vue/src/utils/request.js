@@ -8,14 +8,18 @@ const request = axios.create({
 
 // 请求拦截器
 request.interceptors.request.use(
-  config => {
-    // 在请求发送之前可以在这里对请求做一些处理，比如添加 token 等
-    return config
-  },
-  error => {
-    // 对请求错误做一些处理
-    return Promise.reject(error)
-  }
+    config => {
+      // 在请求发送之前可以在这里对请求做一些处理，比如添加 token 等
+      const token = localStorage.getItem('token')
+      if (token) {
+        config.headers.Authorization = 'Bearer ' + token
+      }
+      return config
+    },
+    error => {
+      // 对请求错误做一些处理
+      return Promise.reject(error)
+    }
 )
 
 // 响应拦截器
