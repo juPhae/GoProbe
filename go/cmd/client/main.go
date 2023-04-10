@@ -29,6 +29,7 @@ type SystemStats struct {
 	Disk   float64 `json:"disk" unit:"%"`
 	NetIn  float64 `json:"net_in" unit:"kbps"`
 	NetOut float64 `json:"net_out" unit:"kbps"`
+	Time   string  `json:"time"`
 }
 
 var deviceName string
@@ -80,6 +81,7 @@ func getSystemStatus() string {
 		Disk:   diskStats.UsedPercent,
 		NetIn:  netInSpeed,
 		NetOut: netOutSpeed,
+		Time:   time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	s, err := json.MarshalIndent(stats, "", "\t")

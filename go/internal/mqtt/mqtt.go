@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"container/list"
 	"fmt"
 	mqttC "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mochi-co/mqtt/v2"
@@ -51,12 +52,22 @@ func MqttClientStart() {
 	}
 }
 
+// Queue 定义一个最大长度为20的队列
+var Queue = list.New()
+
+const queueMaxLen = 15
+
 // 处理接收到的消息
 func messageHandler(client mqttC.Client, msg mqttC.Message) {
 	fmt.Printf("收到消息 %s 来自主题 %s\n", string(msg.Payload()), msg.Topic())
 	if msg.Topic() == "device/status/topic/info" {
-		//publish(client)
-		//把设备消息发送到通过HTTP返回给前端
+		//存到队列中
+		// 将消息添加到队列中
+		if Queue.Len() >= queueMaxLen {
+			// 队列已满，移除队头元素
+			Queue.Remove(Queue.Front())
+		}
+		Queue.PushBack(msg.Payload())
 	}
 	if msg.Topic() == "device/status/topic/management" {
 
