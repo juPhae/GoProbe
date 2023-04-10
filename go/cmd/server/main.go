@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"goprobe/internal/mqtt"
+	"goprobe/internal/util"
 	"log"
 	"net/http"
 	"time"
@@ -15,8 +17,8 @@ type User struct {
 }
 
 func main() {
-	go MqttClientStart()
-	go MqttServerStart()
+	go mqtt.MqttClientStart()
+	go mqtt.MqttServerStart()
 	ginStart()
 	//time.Sleep(1000 * time.Second)
 }
@@ -28,14 +30,14 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 解密用户名
-	username, err := Decrypt([]byte(user.Username), []byte("1234567812345678"))
+	username, err := util.Decrypt([]byte(user.Username), []byte("1234567812345678"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decrypt username"})
 		return
 	}
 
 	// 解密密码
-	password, err := Decrypt([]byte(user.Password), []byte("1234567812345678"))
+	password, err := util.Decrypt([]byte(user.Password), []byte("1234567812345678"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decrypt password"})
 		return

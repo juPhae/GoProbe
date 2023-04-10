@@ -1,0 +1,4 @@
+*/.idea/
+/vue/package-lock.json
+/vue/node_modules/
+/vue/dist/
