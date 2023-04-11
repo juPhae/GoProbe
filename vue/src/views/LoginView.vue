@@ -51,8 +51,12 @@ export default {
                 if (response.token) {
                     // 存储 token 到 localStorage
                     localStorage.setItem('token', response.token);
+                    // 登录成功后跳转到之前的页面
+                    const redirect = this.$route.query.redirect || '/device'
+                    localStorage.setItem('redirect', redirect)
+                    this.$router.push({ path: redirect })
                     // 登录成功，跳转到设备视图页面
-                    this.$router.push('/device');
+                    // this.$router.push('/device');
                 } else {
                     // 登录失败，提示错误信息
                     Message.error('登录失败：' + response.message);

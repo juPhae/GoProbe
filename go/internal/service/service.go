@@ -69,24 +69,16 @@ func login(c *gin.Context) {
 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 }
 
-type SystemStatus struct {
-	Device string  `json:"device"`
-	CPU    float64 `json:"cpu"`
-	Memory int     `json:"memory"`
-	Disk   float64 `json:"disk"`
-	NetIn  float64 `json:"net_in"`
-	NetOut float64 `json:"net_out"`
-	Time   string  `json:"time"`
-}
-
 func getStatus(c *gin.Context) {
 	// 遍历队列，取出最新的12个消息并解析为结构体对象
-	var data []SystemStatus
+	var data []util.SystemStatus
 	for e := mqtt.Queue.Back(); e != nil && len(data) < 12; e = e.Prev() {
-		var status SystemStatus
+		var status util.SystemStatus
+		log.Println(string(e.Value.([]byte)))
+
 		err := json.Unmarshal(e.Value.([]byte), &status)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal message"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal message", "data": err})
 			return
 		}
 		data = append(data, status)

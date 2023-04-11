@@ -27,7 +27,11 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const token = localStorage.getItem('token')
   if (requiresAuth && !token) {
-    next('/')
+    // 如果需要授权但用户未登录，则跳转到登录页，并将当前页面路径作为参数传递给登录页
+    next({
+      path: '/',
+      query: { redirect: to.fullPath }
+    })
   } else {
     next()
   }

@@ -9,19 +9,10 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
+	"goprobe/internal/util"
 	"log"
 	"time"
 )
-
-type SystemStats struct {
-	Device string  `json:"device"`
-	CPU    float64 `json:"cpu" unit:"%"`
-	Memory float64 `json:"memory" unit:"%"`
-	Disk   float64 `json:"disk" unit:"%"`
-	NetIn  float64 `json:"net_in" unit:"kbps"`
-	NetOut float64 `json:"net_out" unit:"kbps"`
-	Time   string  `json:"time"`
-}
 
 var deviceName string
 
@@ -65,7 +56,7 @@ func getSystemStatus() string {
 	netInSpeed := (netIn - prevNetIn) / elapsed.Seconds() / 1024
 	netOutSpeed := (netOut - prevNetOut) / elapsed.Seconds() / 1024
 
-	stats := SystemStats{
+	stats := util.SystemStatus{
 		Device: hostInfo.Hostname,
 		CPU:    cpuUsage[0],
 		Memory: memoryStats.UsedPercent,
@@ -73,6 +64,7 @@ func getSystemStatus() string {
 		NetIn:  netInSpeed,
 		NetOut: netOutSpeed,
 		Time:   time.Now().Format("2006-01-02 15:04:05"),
+		CpuId:  hostInfo.HostID,
 	}
 
 	s, err := json.MarshalIndent(stats, "", "\t")
