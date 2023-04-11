@@ -63,15 +63,23 @@ export default {
             });
         },
         start(index) {
-            const device = this.systemStatusData[index].device;
-            startShell(device).then((response) => {
+            const data = {
+                device: this.systemStatusData[index].device,
+                cpu_id:this.systemStatusData[index].cpu_id,
+            };
+
+            startShell(data).then((response) => {
                 console.log(response);
                 // 处理启动设备的响应
             });
         },
         stop(index) {
-            const device = this.systemStatusData[index].device;
-            stopShell(device).then((response) => {
+            const data = {
+                device: this.systemStatusData[index].device,
+                cpu_id:this.systemStatusData[index].cpu_id,
+            };
+
+            stopShell(data).then((response) => {
                 console.log(response);
                 // 处理停止设备的响应
             });

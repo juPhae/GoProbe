@@ -1,0 +1,9 @@
+# 脚本路径
+script_path: "/home/ubuntu/keepLive/keep.sh"
+
+# MQTT主机地址和端口
+mqtt_host: "localhost"
+mqtt_port: 1883
+
+# 心跳时间间隔（秒）
+heartbeat_period: 30

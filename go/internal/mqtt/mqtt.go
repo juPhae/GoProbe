@@ -7,6 +7,7 @@ import (
 	"github.com/mochi-co/mqtt/v2"
 	"github.com/mochi-co/mqtt/v2/hooks/auth"
 	"github.com/mochi-co/mqtt/v2/listeners"
+	"goprobe/internal/util"
 	"log"
 )
 
@@ -35,13 +36,15 @@ func MqttServerStart() {
 	}
 }
 
+var GlobClient mqttC.Client
+
 func MqttClientStart() {
 	// 设置连接参数
-	opts := mqttC.NewClientOptions().AddBroker("tcp://localhost:1883").SetClientID("mqtt-example-client")
+	opts := mqttC.NewClientOptions().AddBroker("tcp://localhost:1883").SetClientID(util.CpuID)
 
 	// 创建客户端实例
 	client := mqttC.NewClient(opts)
-
+	GlobClient = client //给全局变量赋值
 	// 连接 MQTT 服务器
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatal(token.Error())
@@ -83,4 +86,11 @@ func publish(client mqttC.Client) {
 		log.Fatal(token.Error())
 	}
 	fmt.Printf("已发送消息 %s 到主题 %s\n", text, topic)
+}
+func Publish(toic string, text string) {
+	// 发送消息
+	if token := GlobClient.Publish(toic, 0, false, text); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
+	}
+	fmt.Printf("已发送消息 %s 到主题 %s\n", text, toic)
 }

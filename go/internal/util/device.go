@@ -1,5 +1,10 @@
 package util
 
+var (
+	DeviceName string
+	CpuID      string
+)
+
 type SystemStatus struct {
 	Device string  `json:"device"`
 	CPU    float64 `json:"cpu" unit:"%"`
@@ -9,4 +14,10 @@ type SystemStatus struct {
 	NetOut float64 `json:"net_out" unit:"kbps"`
 	Time   string  `json:"time"`
 	CpuId  string  `json:"cpu_id"`
+}
+
+type DeviceParams struct {
+	CpuID   string `json:"cpu_id"`
+	Device  string `json:"device"`
+	Command string `json:"command"`
 }

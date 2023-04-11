@@ -26,7 +26,8 @@ func GinStart() {
 
 	// 获取状态接口
 	r.GET("/status", authMiddleware(), getStatus)
-
+	r.POST("/device/start", authMiddleware(), startShellHandler)
+	r.POST("/device/stop", authMiddleware(), stopShellHandler)
 	err := r.Run(":8080")
 	if err != nil {
 		return
@@ -149,4 +150,44 @@ func corsMiddleware() gin.HandlerFunc {
 		}
 		c.Next()
 	}
+}
+
+func startShellHandler(c *gin.Context) {
+	// 从请求中获取需要的数据
+	log.Println("startShellHandler")
+	var deviceParams = util.DeviceParams{}
+	if err := c.BindJSON(&deviceParams); err != nil {
+		// 返回错误响应
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	// 组装MQTT消息
+	topic := "device/status/topic/management"
+	//message := fmt.Sprintf(`{"cpu_id":"%s","device":"%s",""}`, deviceParams.CpuID, deviceParams.Device)
+	message := fmt.Sprintf(`{"cpu_id":"%s","device":"%s","command":"%s"}`, deviceParams.CpuID, deviceParams.Device, "start")
+	// 通过mqtt发送消息
+	mqtt.Publish(topic, message)
+
+	// 返回成功响应
+	c.JSON(http.StatusOK, gin.H{"result": 1})
+}
+
+func stopShellHandler(c *gin.Context) {
+	// 从请求中获取需要的数据
+	log.Println("stopShellHandler")
+	var deviceParams = util.DeviceParams{}
+	if err := c.BindJSON(&deviceParams); err != nil {
+		// 返回错误响应
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	// 组装MQTT消息
+	topic := "device/status/topic/management"
+	//message := fmt.Sprintf(`{"cpu_id":"%s","device":"%s",""}`, deviceParams.CpuID, deviceParams.Device)
+	message := fmt.Sprintf(`{"cpu_id":"%s","device":"%s","command":"%s"}`, deviceParams.CpuID, deviceParams.Device, "stop")
+	// 通过mqtt发送消息
+	mqtt.Publish(topic, message)
+
+	// 返回成功响应
+	c.JSON(http.StatusOK, gin.H{"result": 1})
 }
